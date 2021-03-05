@@ -1,17 +1,19 @@
 {
-  "name": "server",
-  "version": "1.0.0",
-  "description": "",
-  "main": "index.js",
-  "scripts": {
-    "start": "ts-node src/index.ts"
-  },
-  "keywords": [],
   "author": "",
-  "license": "ISC",
+  "description": "",
   "devDependencies": {
     "@types/node": "^14.14.31",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.2"
-  }
+  },
+  "keywords": [],
+  "license": "ISC",
+  "main": "index.js",
+  "name": "server",
+  "scripts": {
+    "start": "node dist/index.js",
+    "tsstart": "ts-node src/index.ts",
+    "watch": "tsc -w"
+  },
+  "version": "1.0.0"
 }
