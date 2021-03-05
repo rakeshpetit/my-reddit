@@ -12,6 +12,6 @@ export class Post {
     updatedAt = new Date();
 
     @Property()
-    Title!: string;
+    title!: string;
 
 }
