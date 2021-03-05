@@ -18,5 +18,12 @@
     "tsstart": "ts-node src/index.ts",
     "watch": "tsc -w"
   },
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "dependencies": {
+    "@mikro-orm/cli": "^4.4.4",
+    "@mikro-orm/core": "^4.4.4",
+    "@mikro-orm/migrations": "^4.4.4",
+    "@mikro-orm/postgresql": "^4.4.4",
+    "pg": "^8.5.1"
+  }
 }
