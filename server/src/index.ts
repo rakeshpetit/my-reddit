@@ -1,16 +1,25 @@
 import { MikroORM } from "@mikro-orm/core"
+import { ApolloServer } from "apollo-server-express"
 import express from "express"
-import { Post } from "./entities/Post"
+import { buildSchema } from "type-graphql"
 import mikroOrmConfig from "./mikro-orm.config"
+import { HelloResolver } from "./resolvers/hello"
 
 const main = async () => {
   const orm = await MikroORM.init(mikroOrmConfig)
   await orm.getMigrator().up()
 
   const app = express()
-  app.get('/', (req, res) => {
-    res.send('yo man!')
+
+  const apolloServer = new ApolloServer({
+    schema: await buildSchema({
+      resolvers: [HelloResolver],
+      validate: false
+    })
   })
+
+  apolloServer.applyMiddleware({ app })
+
   app.listen(4000, () => {
     console.log('Server started on port 4000')
   })
