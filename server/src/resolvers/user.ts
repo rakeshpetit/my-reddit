@@ -2,6 +2,7 @@ import argon2 from 'argon2'
 import { User } from './../entities/User';
 import { MyContext } from './../types';
 import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { COOKIE_NAME } from '../constants';
 
 @InputType()
 class UsernamePasswordInput {
@@ -64,7 +65,7 @@ export class UserResolver {
       }
     }
     const user = await em.findOne(User, { id: req.session.userId })
-    if(!user)
+    if (!user)
       return {
         errors: [{
           field: 'session',
@@ -138,6 +139,19 @@ export class UserResolver {
     req.session.userId = user.id
 
     return { user }
+  }
+
+  @Mutation(() => Boolean)
+  logout(@Ctx() { req, res }: MyContext): Promise<boolean> {
+    return new Promise((resolve) =>
+      req.session.destroy((err) => {
+        res.clearCookie(COOKIE_NAME)
+        if (err) {
+          resolve(false)
+          return
+        }
+        resolve(true)
+      }))
   }
 
 }
