@@ -6,9 +6,9 @@ import Wrapper from "../components/Wrapper";
 import { useLoginMutation, useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
 import { useRouter } from "next/router";
-interface RegisterProps {}
+interface LoginProps {}
 
-export const Register: React.FC<RegisterProps> = ({}) => {
+export const Login: React.FC<LoginProps> = ({}) => {
   const router = useRouter();
   const [, login] = useLoginMutation();
   return (
@@ -45,7 +45,7 @@ export const Register: React.FC<RegisterProps> = ({}) => {
               backgroundColor="teal"
               type="submit"
             >
-              Register
+              Login
             </Button>
           </Form>
         )}
@@ -54,4 +54,4 @@ export const Register: React.FC<RegisterProps> = ({}) => {
   );
 };
 
-export default Register;
+export default Login;
