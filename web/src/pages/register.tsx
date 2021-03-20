@@ -5,11 +5,13 @@ import InputField from "../components/InputField";
 import Wrapper from "../components/Wrapper";
 import { useRegisterMutation } from "../generated/graphql";
 import { toErrorMap } from "../utils/toErrorMap";
-import { useRouter } from 'next/router'
+import { useRouter } from "next/router";
+import { withUrqlClient } from "next-urql";
+import { createUrqlClient } from "../utils/createUrqlClient";
 interface RegisterProps {}
 
 export const Register: React.FC<RegisterProps> = ({}) => {
-  const router = useRouter()
+  const router = useRouter();
   const [, register] = useRegisterMutation();
   return (
     <Wrapper variant="small">
@@ -20,7 +22,7 @@ export const Register: React.FC<RegisterProps> = ({}) => {
           if (response.data?.register.errors) {
             setErrors(toErrorMap(response.data.register.errors));
           } else {
-            router.push('/')
+            router.push("/");
           }
         }}
       >
@@ -54,4 +56,4 @@ export const Register: React.FC<RegisterProps> = ({}) => {
   );
 };
 
-export default Register;
+export default withUrqlClient(createUrqlClient)(Register);
