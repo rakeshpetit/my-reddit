@@ -1,53 +1,9 @@
 import argon2 from 'argon2'
 import { User } from './../entities/User';
 import { MyContext } from './../types';
-import { Arg, Ctx, Field, InputType, Mutation, ObjectType, Query, Resolver } from "type-graphql";
+import { Arg, Ctx, Mutation, Query, Resolver } from "type-graphql";
 import { COOKIE_NAME } from '../constants';
-
-@InputType()
-class UsernamePasswordInput {
-  @Field()
-  username: string
-  @Field()
-  password: string
-}
-
-@ObjectType()
-class FieldError {
-  @Field()
-  field: string
-  @Field()
-  message: string
-}
-
-@ObjectType()
-class UserResponse {
-  @Field(() => [FieldError], { nullable: true })
-  errors?: FieldError[]
-
-  @Field(() => User, { nullable: true })
-  user?: User
-}
-
-const validateUserInput = (options: UsernamePasswordInput) => {
-  if (options.username.length <= 2) {
-    return {
-      errors: [{
-        field: 'username',
-        message: 'length must be greater than 2'
-      }]
-    }
-  }
-  if (options.password.length <= 5) {
-    return {
-      errors: [{
-        field: 'password',
-        message: 'length must be greater than 5'
-      }]
-    }
-  }
-  return
-}
+import { UsernamePasswordInput, UserResponse, validateUserInput } from '../utils/validateUserInput';
 
 @Resolver()
 export class UserResolver {
@@ -55,7 +11,6 @@ export class UserResolver {
   async me(
     @Ctx() { em, req }: MyContext
   ): Promise<UserResponse> {
-    console.log(req.session)
     if (!req.session || !req.session.userId) {
       return {
         errors: [{
