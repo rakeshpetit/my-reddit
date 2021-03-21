@@ -9,7 +9,7 @@ import { UsernamePasswordInput, UserResponse, validateUserInput } from '../utils
 export class UserResolver {
   @Query(() => UserResponse, { nullable: true })
   async me(
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     if (!req.session || !req.session.userId) {
       return {
@@ -19,7 +19,7 @@ export class UserResolver {
         }]
       }
     }
-    const user = await em.findOne(User, { id: req.session.userId })
+    const user = await User.findOne(req.session.userId)
     if (!user)
       return {
         errors: [{
@@ -33,19 +33,19 @@ export class UserResolver {
   @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const validationError = validateUserInput(options)
     if (validationError) {
       return validationError
     }
     const hashedPassword = await argon2.hash(options.password)
-    const user = em.create(User, {
-      username: options.username,
-      password: hashedPassword
-    })
+    let user
     try {
-      await em.persistAndFlush(user)
+      user = await User.create({
+        username: options.username,
+        password: hashedPassword
+      }).save()
     }
     catch (err) {
       // eslint-disable-next-line @typescript-eslint/no-unsafe-call
@@ -59,20 +59,21 @@ export class UserResolver {
         }
       }
     }
-    req.session.userId = user.id
+    if (user)
+      req.session.userId = user.id
     return { user }
   }
 
   @Mutation(() => UserResponse)
   async login(
     @Arg('options') options: UsernamePasswordInput,
-    @Ctx() { em, req }: MyContext
+    @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
     const validationError = validateUserInput(options)
     if (validationError) {
       return validationError
     }
-    const user = await em.findOne(User, { username: options.username })
+    const user = await User.findOne({ where: { username: options.username } })
     if (!user) {
       return {
         errors: [{
