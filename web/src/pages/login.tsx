@@ -21,8 +21,12 @@ export const Login: React.FC<LoginProps> = ({}) => {
           const response = await login({ options: values });
           if (response.data?.login.errors) {
             setErrors(toErrorMap(response.data.login.errors));
-          } else {
-            router.push("/");
+          } else if (response.data?.login.user) {
+            if (typeof router.query.next === "string") {
+              router.push(router.query.next);
+            } else {
+              router.push("/");
+            }
           }
         }}
       >
