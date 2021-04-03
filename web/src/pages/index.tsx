@@ -4,18 +4,20 @@ import Layout from "../components/Layout";
 import { usePostsQuery } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import NextLink from "next/link";
-import React from "react";
+import React, { useState } from "react";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
 
 const Index = () => {
+  const [variables, setVariables] = useState({
+    limit: 10,
+    cursor: null as null | string,
+  });
   const [{ data, fetching }] = usePostsQuery({
-    variables: {
-      limit: 10,
-    },
+    variables,
   });
 
-  if(!fetching && !data) {
-    return <div>Your query failed for some reason</div>
+  if (!fetching && !data) {
+    return <div>Your query failed for some reason</div>;
   }
 
   return (
@@ -40,7 +42,17 @@ const Index = () => {
       )}
       {data && (
         <Flex mt="4">
-          <Button backgroundColor="messenger.100" my={4} m="auto">
+          <Button
+            onClick={() => {
+              setVariables({
+                limit: variables.limit,
+                cursor: data.posts[data.posts.length - 1].createdAt,
+              });
+            }}
+            backgroundColor="messenger.100"
+            my={4}
+            m="auto"
+          >
             Load more...
           </Button>
         </Flex>

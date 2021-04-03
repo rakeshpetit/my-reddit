@@ -1,9 +1,9 @@
 import { dedupExchange, fetchExchange } from '@urql/core';
-import { cacheExchange } from "@urql/exchange-graphcache";
+import { cacheExchange, Resolver } from "@urql/exchange-graphcache";
 import { LogoutMutation, MeQuery, MeDocument, LoginMutation, RegisterMutation } from '../generated/graphql';
 import { typedUpdateQuery } from './typedUpdateQuery';
 import { pipe, tap } from 'wonka';
-import { Exchange } from 'urql';
+import { Exchange, stringifyVariables } from 'urql';
 import Router from 'next/router';
 
 const errorExchange: Exchange = ({ forward }) => ops$ => {
@@ -18,6 +18,36 @@ const errorExchange: Exchange = ({ forward }) => ops$ => {
 };
 
 
+const cursorPagination = (): Resolver => {
+    return (_parent, fieldArgs, cache, info) => {
+        const { parentKey: entityKey, fieldName } = info;
+        const allFields = cache.inspectFields(entityKey);
+        const fieldInfos = allFields.filter((info) => info.fieldName === fieldName);
+        const size = fieldInfos.length;
+        if (size === 0) {
+            return undefined;
+        }
+
+        const fieldKey = `${fieldName}(${stringifyVariables(fieldArgs)})`;
+        const isItInTheCache = cache.resolve(entityKey, fieldKey)
+        info.partial = !isItInTheCache;
+        let hasMore = true;
+        const results: string[] = [];
+        fieldInfos.forEach((fi) => {
+            const data = cache.resolve(entityKey, fi.fieldKey) as string[];
+            const _hasMore = cache.resolve(entityKey, "hasMore");
+            if (!_hasMore) {
+                hasMore = _hasMore as boolean;
+            }
+            if(data)
+            results.push(...data);
+        });
+
+        return results
+
+    };
+};
+
 export const createUrqlClient = (ssrExchange: any) => ({
     url: "http://localhost:4000/graphql",
     fetchOptions: {
@@ -26,6 +56,11 @@ export const createUrqlClient = (ssrExchange: any) => ({
     exchanges: [
         dedupExchange,
         cacheExchange({
+            resolvers: {
+                Query: {
+                    posts: cursorPagination()
+                }
+            },
             updates: {
                 Mutation: {
                     logout: (_result, args, cache, info) => {
