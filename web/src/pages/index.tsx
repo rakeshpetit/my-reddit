@@ -6,6 +6,7 @@ import { createUrqlClient } from "../utils/createUrqlClient";
 import NextLink from "next/link";
 import React, { useState } from "react";
 import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
 
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -34,11 +35,23 @@ const Index = () => {
       ) : (
         <Stack spacing={8}>
           {data!.posts.posts.map((p) => (
-            <Box p={5} key={p.id} shadow="md" borderWidth="1px">
-              <Heading fontSize="xl">{p.title}</Heading>
-              <Text>Posted by {p.creator.username}</Text>
-              <Text mt={4}>{p.textSnippet}</Text>
-            </Box>
+            <Flex p={5} key={p.id} shadow="md" borderWidth="1px">
+              <Flex
+                direction="column"
+                justifyContent="center"
+                alignItems="center"
+                mr={4}
+              >
+                <ChevronUpIcon size="24px" />
+                {p.points}
+                <ChevronDownIcon size="24px" />
+              </Flex>
+              <Box>
+                <Heading fontSize="xl">{p.title}</Heading>
+                <Text>Posted by {p.creator.username}</Text>
+                <Text mt={4}>{p.textSnippet}</Text>
+              </Box>
+            </Flex>
           ))}
         </Stack>
       )}
