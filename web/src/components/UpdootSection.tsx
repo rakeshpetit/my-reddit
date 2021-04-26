@@ -17,13 +17,17 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
     <Flex direction="column" justifyContent="center" alignItems="center" mr={4}>
       <IconButton
         onClick={async () => {
-          setLoadingState("upvote-loading");
-          await vote({
-            postId: post.id,
-            value: 1,
-          });
-          setLoadingState("not-loading");
+          if (post.voteStatus === 1) {
+          } else {
+            setLoadingState("upvote-loading");
+            await vote({
+              postId: post.id,
+              value: 1,
+            });
+            setLoadingState("not-loading");
+          }
         }}
+        backgroundColor={post.voteStatus === 1 ? "green" : undefined}
         aria-label="Upvote post"
       >
         <ChevronUpIcon />
@@ -31,13 +35,17 @@ export const UpdootSection: React.FC<UpdootSectionProps> = ({ post }) => {
       {post.points}
       <IconButton
         onClick={async () => {
-          setLoadingState("downvote-loading");
-          await vote({
-            postId: post.id,
-            value: -1,
-          });
-          setLoadingState("not-loading");
+          if (post.voteStatus === -1) {
+          } else {
+            setLoadingState("downvote-loading");
+            await vote({
+              postId: post.id,
+              value: -1,
+            });
+            setLoadingState("not-loading");
+          }
         }}
+        backgroundColor={post.voteStatus === -1 ? "red" : undefined}
         aria-label="Downvote post"
       >
         <ChevronDownIcon />
