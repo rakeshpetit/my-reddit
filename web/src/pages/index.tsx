@@ -5,8 +5,9 @@ import { usePostsQuery } from "../generated/graphql";
 import { createUrqlClient } from "../utils/createUrqlClient";
 import NextLink from "next/link";
 import React, { useState } from "react";
-import { Box, Button, Flex, Heading, Text } from "@chakra-ui/react";
+import { Box, Button, Flex, Heading, IconButton, Text } from "@chakra-ui/react";
 import { ChevronDownIcon, ChevronUpIcon } from "@chakra-ui/icons";
+import { UpdootSection } from "../components/UpdootSection";
 
 const Index = () => {
   const [variables, setVariables] = useState({
@@ -17,8 +18,7 @@ const Index = () => {
     variables,
   });
 
-
-  if (!fetching && (!data?.posts)) {
+  if (!fetching && !data?.posts) {
     return <div>Your query failed for some reason</div>;
   }
 
@@ -36,16 +36,7 @@ const Index = () => {
         <Stack spacing={8}>
           {data!.posts.posts.map((p) => (
             <Flex p={5} key={p.id} shadow="md" borderWidth="1px">
-              <Flex
-                direction="column"
-                justifyContent="center"
-                alignItems="center"
-                mr={4}
-              >
-                <ChevronUpIcon size="24px" />
-                {p.points}
-                <ChevronDownIcon size="24px" />
-              </Flex>
+              <UpdootSection post={p} />
               <Box>
                 <Heading fontSize="xl">{p.title}</Heading>
                 <Text>Posted by {p.creator.username}</Text>
